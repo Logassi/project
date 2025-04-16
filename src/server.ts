@@ -1,5 +1,7 @@
 import express, { Application } from "express";
 import membershipRoutes from "./routes/membership.routes";
+import informationRoutes from "./routes/information.routes";
+import transactionRoutes from "./routes/transaction.routes";
 
 const app: Application = express();
 
@@ -13,9 +15,7 @@ const app: Application = express();
 app.use(express.json());
 
 app.use("/", membershipRoutes);
-// app.use("/", informationRoutes);
-// app.use("/", transactionRoutes);
-// app.use("/module-membership", membershipRoutes)
-// app.use("/module-information", informationRoutes)
+app.use("/", informationRoutes);
+app.use("/", transactionRoutes);
 
 export default app;
