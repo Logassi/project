@@ -6,26 +6,38 @@ import {
   Update,
 } from "../controllers/membership.controllers";
 import { VerifyToken } from "../middlewares/authorization.middleware";
+import {
+  LoginValidation,
+  RegisterValidation,
+  UpdateValidation,
+} from "../middlewares/validations/authorization.validations";
 
 const router = Router();
 
 router.post(
   "/register",
-  //validation,
+  RegisterValidation, //validation
   Register //controller
 );
 
 router.post(
   "/login",
-  //validation,
+  LoginValidation, //validation
   Login //controller
 );
 
 router.put(
-  "/update",
+  "/profile/update",
   VerifyToken,
-  //validation
+  UpdateValidation,
   Update //controller
+);
+
+router.put(
+  "/profile/image",
+  VerifyToken
+  //validation
+  //   UpdateImage //controller
 );
 
 router.get(

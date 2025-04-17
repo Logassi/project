@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  seed     = "ts-node prisma/seed/index.ts"
   // output   = "../src/generated/prisma"
 }
 
@@ -34,6 +35,16 @@ model Banner {
   description  String
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
+}
+
+model Service {
+  id             Int      @id @default(autoincrement())
+  service_code   String
+  service_name   String
+  service_icon   String
+  service_tariff Float
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
 }
 
 model TransactionHistory {

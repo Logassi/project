@@ -15,3 +15,45 @@ run this command to run the server locally
 ```
 npm run dev
 ```
+
+## Setting up prisma
+
+run this command chronological order to set the prisma
+
+Generate Prisma Client
+
+```
+ npx prisma generate
+```
+
+Set up the database
+
+```
+ npx prisma migrate dev
+```
+
+(Optional) Seed the database
+
+```
+npx prisma db seed
+```
+
+## Enviroment Variables
+
+Create a .env file in the root directory. Use the following format as a reference:
+
+```
+# Format: [DBMS]://[USERNAME]:[PASSWORD]@[HOST]:[PORT]/[DATABASE_NAME]
+
+DATABASE_URL="postgresql://postgres:yourpassword@yourhost.com:5432/postgres"
+
+# Optional: used by Prisma CLI for direct database access
+DIRECT_URL="postgresql://postgres:yourpassword@yourhost.com:5432/postgres"
+
+# Port for the Express.js server
+PORT=1234
+
+# Secret key for things like JWT signing
+SECRET_KEY="your-secret-key"
+
+```
