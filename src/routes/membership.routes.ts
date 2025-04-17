@@ -4,6 +4,7 @@ import {
   Login,
   Register,
   Update,
+  UpdateImage,
 } from "../controllers/membership.controllers";
 import { VerifyToken } from "../middlewares/authorization.middleware";
 import {
@@ -11,6 +12,7 @@ import {
   RegisterValidation,
   UpdateValidation,
 } from "../middlewares/validations/membership.validations";
+import { upload } from "../middlewares/upload.middleware";
 
 const router = Router();
 
@@ -33,12 +35,7 @@ router.put(
   Update //controller
 );
 
-router.put(
-  "/profile/image",
-  VerifyToken
-  //validation
-  //   UpdateImage //controller
-);
+router.put("/profile/image", VerifyToken, upload.single("image"), UpdateImage);
 
 router.get(
   "/profile",

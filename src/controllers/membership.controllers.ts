@@ -9,7 +9,9 @@ import {
   loginUser,
   registerUser,
   updateUser,
+  updateUserImage,
 } from "../services/membership.services";
+import { uploadImageToSupabase } from "../utils/uploader.utils";
 
 const prisma = new PrismaClient();
 
@@ -88,4 +90,28 @@ async function Update(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-export { Register, Login, GetProfile, Update };
+async function UpdateImage(req: Request, res: Response, next: NextFunction) {
+  try {
+    if (!req.user?.email) throw new HttpError(401, "Unauthorized");
+
+    const file = req.file as Express.Multer.File;
+    if (!file) throw new HttpError(400, "No file uploaded");
+
+    const filePath = `profile-images/${Date.now()}-${file.originalname}`;
+    const result = await uploadImageToSupabase(file, filePath);
+
+    const publicUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/profile-image/${filePath}`;
+
+    const updatedUser = await updateUserImage(req.user.email, publicUrl);
+
+    res.status(200).json({
+      status: 200,
+      message: "Profile image updated successfully",
+      data: updatedUser,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export { Register, Login, GetProfile, Update, UpdateImage };

@@ -83,3 +83,22 @@ export async function updateUser(email: string, userInput: UpdateUserInput) {
     data: userInput,
   });
 }
+
+export async function updateUserImage(email: string, image: string) {
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user) throw new HttpError(404, "User not found");
+
+  const updatedUserImage = await prisma.user.update({
+    where: { email },
+    data: {
+      profile_image: image,
+    },
+  });
+
+  return {
+    email: updatedUserImage.email,
+    first_name: updatedUserImage.first_name,
+    last_name: updatedUserImage.last_name,
+    profile_image: updatedUserImage.profile_image,
+  };
+}
