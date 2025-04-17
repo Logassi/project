@@ -62,8 +62,7 @@ async function GetProfile(req: Request, res: Response, next: NextFunction) {
       },
     });
   } catch (error) {
-    console.error("Error fetching profile:", error);
-    throw new Error("Failed to fetch profile");
+    next(error);
   }
 }
 
