@@ -61,3 +61,84 @@ SUPABASE_URL="yoururl.com"
 SUPABASE_SECRET_KEY="your-supabase-secret-key"
 
 ```
+
+## Important notes
+
+# Deployment to vercel
+
+DO NOT FORGET TO REBUILD IT LOCALLY THEN PUSH TO REPOSITORY
+
+```
+npm run build
+```
+
+## Deployed API endpoints
+
+All endpoints are deployed at:
+https://nutechtechtest.vercel.app
+
+# Register
+
+```
+POST /register
+```
+
+# Login
+
+```
+POST /login
+```
+
+# Get Profile
+
+```
+GET /profile
+```
+
+# Update Profile
+
+```
+PUT /profile/update
+```
+
+# Update Profile Image
+
+```
+PUT /profile/image
+```
+
+# Get Services
+
+```
+GET /services
+```
+
+# Get Banner
+
+```
+GET /banner
+```
+
+# Get Balance
+
+```
+GET /balance
+```
+
+# Create Top Up
+
+```
+POST /topup
+```
+
+# Create Transaction
+
+```
+POST /transaction
+```
+
+# Get Transaction History
+
+```
+GET /transaction/history
+```
