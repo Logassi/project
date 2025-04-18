@@ -18,6 +18,7 @@ export async function getBalance(email: string) {
 
 export async function getTransactionHistory(
   offset: number,
+  skip: number,
   limit: number,
   email: string
 ) {
@@ -30,10 +31,10 @@ export async function getTransactionHistory(
         email: email,
       },
     },
-    skip: offset,
+    skip,
     take: limit,
     orderBy: {
-      created_on: "desc", // Optional: latest transactions first
+      created_on: "desc",
     },
     select: {
       invoice_number: true,
@@ -113,7 +114,7 @@ export async function createTransaction(service_code: string, email: string) {
     data: {
       invoice_number: `INV${formattedDate}-${transactionCount + 1}`,
       transaction_type: "PAYMENT",
-      description: `Top Up ${service_code}`,
+      description: `${isService.service_name}`,
       total_amount: isService.service_tariff, // example amount
       created_on: new Date(),
       user: {
@@ -136,9 +137,59 @@ export async function createTransaction(service_code: string, email: string) {
   });
 
   return {
-    invoice_numer: transaction.invoice_number,
+    invoice_number: transaction.invoice_number,
     service_code,
     service_name: isService.service_name,
+    transaction_type: transaction.transaction_type,
+    total_amount: transaction.total_amount,
+    created_on: transaction.created_on,
+  };
+}
+
+export async function recordTopUpTransaction(email: string, amount: number) {
+  const user = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  });
+
+  if (!user) {
+    throw new HttpError(401, "User tidak ditemukan");
+  }
+
+  const transactionCount = await prisma.transactionHistory.count({
+    where: {
+      user: {
+        email,
+      },
+    },
+  });
+
+  const now = new Date();
+
+  // Format date to DDMMYYYY
+  const day = String(now.getDate()).padStart(2, "0");
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const year = now.getFullYear();
+  const formattedDate = `${day}${month}${year}`;
+
+  const transaction = await prisma.transactionHistory.create({
+    data: {
+      invoice_number: `INV${formattedDate}-${transactionCount + 1}`,
+      transaction_type: "TOPUP",
+      description: `Top Up`,
+      total_amount: amount,
+      created_on: new Date(),
+      user: {
+        connect: {
+          email: email,
+        },
+      },
+    },
+  });
+
+  return {
+    invoice_number: transaction.invoice_number,
     transaction_type: transaction.transaction_type,
     total_amount: transaction.total_amount,
     created_on: transaction.created_on,

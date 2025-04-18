@@ -9,6 +9,7 @@ import {
 } from "../types/membership.types";
 import { sign } from "jsonwebtoken";
 import { SECRET_KEY } from "../configs/env.configs";
+import { supabase } from "../configs/supabase.configs";
 
 const prisma = new PrismaClient();
 
@@ -21,9 +22,14 @@ export async function registerUser(userInput: RegisterUserInput) {
     },
   });
 
+  // for user friendly error message
+  // if (findUserEmail) {
+  //   throw new HttpError(409, "Email sudah digunakan");
+  // }
+
+  // for security reason, when don't want to expose if the email is already registered or not
   if (findUserEmail) {
-    console.log("Register failed : Bad request");
-    throw new HttpError(400, "Bad Request");
+    throw new HttpError(400, "Registrasi gagal. Silakan periksa data Anda.");
   }
 
   const salt = await genSalt(10);
@@ -48,12 +54,11 @@ export async function loginUser(userInput: LoginUserInput) {
     },
   });
 
-  if (!findUser) throw new HttpError(401, "Username atau password salah");
+  if (!findUser) throw new HttpError(401, "Email atau password salah");
 
-  // password minimal 8
   const isValid = await compare(password, findUser.password);
 
-  if (!isValid) throw new HttpError(401, "Username atau password salah");
+  if (!isValid) throw new HttpError(401, "Email atau password salah");
 
   const payload = {
     email,
@@ -101,4 +106,24 @@ export async function updateUserImage(email: string, image: string) {
     last_name: updatedUserImage.last_name,
     profile_image: updatedUserImage.profile_image,
   };
+}
+
+export async function getOldProfileImageUrl(email: string) {
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: { profile_image: true },
+  });
+  return user?.profile_image; // Return the old image URL
+}
+
+export async function deleteOldProfileImage(oldImageUrl: string) {
+  const filePath = oldImageUrl.split("/profile-image/")[1];
+
+  const { error } = await supabase.storage
+    .from("profile-image")
+    .remove([filePath]);
+
+  if (error) {
+    throw new HttpError(500, "Failed to delete old profile image");
+  }
 }

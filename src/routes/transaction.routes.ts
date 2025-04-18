@@ -16,16 +16,11 @@ const router = Router();
 router.get(
   "/balance",
   VerifyToken,
-  //validation,
+
   GetBalance
 );
 
-router.post(
-  "/topup",
-  VerifyToken,
-  TopUpValidation, // validation
-  TopUp
-);
+router.post("/topup", VerifyToken, TopUpValidation, TopUp);
 
 router.post(
   "/transaction",
@@ -34,11 +29,6 @@ router.post(
   PostTransaction // user must have a balance to make a transaction
 );
 
-router.get(
-  "/transaction/history",
-  VerifyToken,
-  //validation
-  GetTransactionHistory
-);
+router.get("/transaction/history", VerifyToken, GetTransactionHistory);
 
 export default router;

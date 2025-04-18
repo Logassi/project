@@ -1,10 +1,9 @@
 import { PrismaClient } from "@prisma/client";
-import { compare, genSalt, hash } from "bcrypt";
 import { Request, Response, NextFunction } from "express";
 import { HttpError } from "../utils/http.error";
-import { sign } from "jsonwebtoken";
-import { SECRET_KEY } from "../configs/env.configs";
 import {
+  deleteOldProfileImage,
+  getOldProfileImageUrl,
   getUserProfile,
   loginUser,
   registerUser,
@@ -102,11 +101,17 @@ async function UpdateImage(req: Request, res: Response, next: NextFunction) {
 
     const publicUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/profile-image/${filePath}`;
 
+    const oldProfileImage = await getOldProfileImageUrl(req.user.email);
+
     const updatedUser = await updateUserImage(req.user.email, publicUrl);
+
+    if (oldProfileImage) {
+      await deleteOldProfileImage(oldProfileImage);
+    }
 
     res.status(200).json({
       status: 200,
-      message: "Profile image updated successfully",
+      message: "Update Profile Image berhasil",
       data: updatedUser,
     });
   } catch (error) {

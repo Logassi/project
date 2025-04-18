@@ -56,4 +56,8 @@ PORT=1234
 # Secret key for things like JWT signing
 SECRET_KEY="your-secret-key"
 
+SUPABASE_URL="yoururl.com"
+
+SUPABASE_SECRET_KEY="your-supabase-secret-key"
+
 ```

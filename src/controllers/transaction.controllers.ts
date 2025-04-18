@@ -3,6 +3,7 @@ import {
   createTransaction,
   getBalance,
   getTransactionHistory,
+  recordTopUpTransaction,
   topUp,
 } from "../services/transaction.services";
 import { HttpError } from "../utils/http.error";
@@ -38,10 +39,13 @@ async function GetTransactionHistory(
     }
 
     const offset = parseInt(req.query.offset as string) || 0;
+    const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
+    const skip = (page - 1) * limit;
 
     const transactionHistory = await getTransactionHistory(
       offset,
+      skip,
       limit,
       req.user?.email
     );
@@ -65,6 +69,13 @@ async function TopUp(req: Request, res: Response, next: NextFunction) {
     const { top_up_amount } = req.body;
 
     await topUp(top_up_amount, req.user?.email);
+
+    const recordedTopUp = await recordTopUpTransaction(
+      req.user?.email,
+      top_up_amount
+    );
+
+    // console.log(recordedTopUp);
 
     const finalBalance = await getBalance(req.user?.email);
 

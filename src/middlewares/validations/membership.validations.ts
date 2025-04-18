@@ -7,6 +7,13 @@ export const RegisterValidation = [
     .withMessage("Email harus diisi")
     .isEmail()
     .withMessage("Parameter email tidak sesuai format"),
+  // .custom((value) => {
+  //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  //   if (!emailRegex.test(value)) {
+  //     throw { msg: "Parameter email tidak sesuai format", code: 102 };
+  //   }
+  //   return true;
+  // }),
 
   body("first_name")
     .notEmpty()
@@ -52,7 +59,6 @@ export const LoginValidation = [
 export const UpdateValidation = [
   body("email")
     .optional()
-    // .withMessage("Tidak boleh string kosong")
     .notEmpty()
     .withMessage("Email tidak boleh kosong")
     .isEmail()
@@ -60,7 +66,6 @@ export const UpdateValidation = [
 
   body("first_name")
     .optional()
-    // .withMessage("Tidak boleh string kosong")
     .notEmpty()
     .withMessage("First name tidak boleh kosong")
     .isString()
@@ -68,7 +73,6 @@ export const UpdateValidation = [
 
   body("last_name")
     .optional()
-    // .withMessage("Tidak boleh string kosong")
     .notEmpty()
     .withMessage("Last name tidak boleh kosong")
     .isString()
@@ -76,9 +80,6 @@ export const UpdateValidation = [
 
   body("profile_image")
     .optional()
-    // .withMessage("Tidak boleh string kosong")
-    // need some modification to validate image url
-    // i am planning to use supabase bucket for image storage
     .notEmpty()
     .withMessage("Profile image tidak boleh kosong")
     .isString()
@@ -86,7 +87,6 @@ export const UpdateValidation = [
 
   body("password")
     .optional()
-    // .withMessage("Tidak boleh string kosong")
     .notEmpty()
     .withMessage("Password tidak boleh kosong")
     .isLength({ min: 8 })

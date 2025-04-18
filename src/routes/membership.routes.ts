@@ -16,32 +16,14 @@ import { upload } from "../middlewares/upload.middleware";
 
 const router = Router();
 
-router.post(
-  "/register",
-  RegisterValidation, //validation
-  Register //controller
-);
+router.post("/register", RegisterValidation, Register);
 
-router.post(
-  "/login",
-  LoginValidation, //validation
-  Login //controller
-);
+router.post("/login", LoginValidation, Login);
 
-router.put(
-  "/profile/update",
-  VerifyToken,
-  UpdateValidation,
-  Update //controller
-);
+router.put("/profile/update", VerifyToken, UpdateValidation, Update);
 
 router.put("/profile/image", VerifyToken, upload.single("image"), UpdateImage);
 
-router.get(
-  "/profile",
-  VerifyToken,
-  //validation
-  GetProfile //controller
-);
+router.get("/profile", VerifyToken, GetProfile);
 
 export default router;

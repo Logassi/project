@@ -5,7 +5,7 @@ export async function uploadImageToSupabase(
   path: string
 ) {
   const { data, error } = await supabase.storage
-    .from("profile-image") // change this to your actual bucket
+    .from("profile-image") // supabase bucket name
     .upload(path, file.buffer, {
       contentType: file.mimetype,
       upsert: true,
