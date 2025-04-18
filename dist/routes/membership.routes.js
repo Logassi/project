@@ -4,21 +4,11 @@ const express_1 = require("express");
 const membership_controllers_1 = require("../controllers/membership.controllers");
 const authorization_middleware_1 = require("../middlewares/authorization.middleware");
 const membership_validations_1 = require("../middlewares/validations/membership.validations");
+const upload_middleware_1 = require("../middlewares/upload.middleware");
 const router = (0, express_1.Router)();
-router.post("/register", membership_validations_1.RegisterValidation, //validation
-membership_controllers_1.Register //controller
-);
-router.post("/login", membership_validations_1.LoginValidation, //validation
-membership_controllers_1.Login //controller
-);
-router.put("/profile/update", authorization_middleware_1.VerifyToken, membership_validations_1.UpdateValidation, membership_controllers_1.Update //controller
-);
-router.put("/profile/image", authorization_middleware_1.VerifyToken
-//validation
-//   UpdateImage //controller
-);
-router.get("/profile", authorization_middleware_1.VerifyToken, 
-//validation
-membership_controllers_1.GetProfile //controller
-);
+router.post("/register", membership_validations_1.RegisterValidation, membership_controllers_1.Register);
+router.post("/login", membership_validations_1.LoginValidation, membership_controllers_1.Login);
+router.put("/profile/update", authorization_middleware_1.VerifyToken, membership_validations_1.UpdateValidation, membership_controllers_1.Update);
+router.put("/profile/image", authorization_middleware_1.VerifyToken, upload_middleware_1.upload.single("image"), membership_controllers_1.UpdateImage);
+router.get("/profile", authorization_middleware_1.VerifyToken, membership_controllers_1.GetProfile);
 exports.default = router;

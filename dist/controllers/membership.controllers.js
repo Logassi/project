@@ -13,9 +13,11 @@ exports.Register = Register;
 exports.Login = Login;
 exports.GetProfile = GetProfile;
 exports.Update = Update;
+exports.UpdateImage = UpdateImage;
 const client_1 = require("@prisma/client");
 const http_error_1 = require("../utils/http.error");
 const membership_services_1 = require("../services/membership.services");
+const uploader_utils_1 = require("../utils/uploader.utils");
 const prisma = new client_1.PrismaClient();
 function Register(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -90,6 +92,34 @@ function Update(req, res, next) {
                     last_name: updatedUser.last_name,
                     profile_image: updatedUser.profile_image,
                 },
+            });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+function UpdateImage(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var _a;
+        try {
+            if (!((_a = req.user) === null || _a === void 0 ? void 0 : _a.email))
+                throw new http_error_1.HttpError(401, "Unauthorized");
+            const file = req.file;
+            if (!file)
+                throw new http_error_1.HttpError(400, "No file uploaded");
+            const filePath = `profile-images/${Date.now()}-${file.originalname}`;
+            const result = yield (0, uploader_utils_1.uploadImageToSupabase)(file, filePath);
+            const publicUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/profile-image/${filePath}`;
+            const oldProfileImage = yield (0, membership_services_1.getOldProfileImageUrl)(req.user.email);
+            const updatedUser = yield (0, membership_services_1.updateUserImage)(req.user.email, publicUrl);
+            if (oldProfileImage) {
+                yield (0, membership_services_1.deleteOldProfileImage)(oldProfileImage);
+            }
+            res.status(200).json({
+                status: 200,
+                message: "Update Profile Image berhasil",
+                data: updatedUser,
             });
         }
         catch (error) {

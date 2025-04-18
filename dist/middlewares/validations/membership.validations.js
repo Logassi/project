@@ -9,6 +9,13 @@ exports.RegisterValidation = [
         .withMessage("Email harus diisi")
         .isEmail()
         .withMessage("Parameter email tidak sesuai format"),
+    // .custom((value) => {
+    //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    //   if (!emailRegex.test(value)) {
+    //     throw { msg: "Parameter email tidak sesuai format", code: 102 };
+    //   }
+    //   return true;
+    // }),
     (0, express_validator_1.body)("first_name")
         .notEmpty()
         .withMessage("First name harus diisi")
@@ -44,37 +51,30 @@ exports.LoginValidation = [
 exports.UpdateValidation = [
     (0, express_validator_1.body)("email")
         .optional()
-        // .withMessage("Tidak boleh string kosong")
         .notEmpty()
         .withMessage("Email tidak boleh kosong")
         .isEmail()
         .withMessage("Parameter email tidak sesuai format"),
     (0, express_validator_1.body)("first_name")
         .optional()
-        // .withMessage("Tidak boleh string kosong")
         .notEmpty()
         .withMessage("First name tidak boleh kosong")
         .isString()
         .withMessage("First name harus berupa string"),
     (0, express_validator_1.body)("last_name")
         .optional()
-        // .withMessage("Tidak boleh string kosong")
         .notEmpty()
         .withMessage("Last name tidak boleh kosong")
         .isString()
         .withMessage("Last name harus berupa string"),
     (0, express_validator_1.body)("profile_image")
         .optional()
-        // .withMessage("Tidak boleh string kosong")
-        // need some modification to validate image url
-        // i am planning to use supabase bucket for image storage
         .notEmpty()
         .withMessage("Profile image tidak boleh kosong")
         .isString()
         .withMessage("Profile image harus berupa string"),
     (0, express_validator_1.body)("password")
         .optional()
-        // .withMessage("Tidak boleh string kosong")
         .notEmpty()
         .withMessage("Password tidak boleh kosong")
         .isLength({ min: 8 })

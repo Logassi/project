@@ -44,8 +44,10 @@ function GetTransactionHistory(req, res, next) {
                 throw new http_error_1.HttpError(401, "Unauthorized");
             }
             const offset = parseInt(req.query.offset) || 0;
+            const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 10;
-            const transactionHistory = yield (0, transaction_services_1.getTransactionHistory)(offset, limit, (_b = req.user) === null || _b === void 0 ? void 0 : _b.email);
+            const skip = (page - 1) * limit;
+            const transactionHistory = yield (0, transaction_services_1.getTransactionHistory)(offset, skip, limit, (_b = req.user) === null || _b === void 0 ? void 0 : _b.email);
             res.status(200).json({
                 status: 200,
                 message: "Get History  Berhasil",
@@ -59,14 +61,16 @@ function GetTransactionHistory(req, res, next) {
 }
 function TopUp(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        var _a, _b, _c;
+        var _a, _b, _c, _d;
         try {
             if (!((_a = req.user) === null || _a === void 0 ? void 0 : _a.email)) {
                 throw new http_error_1.HttpError(401, "Unauthorized");
             }
             const { top_up_amount } = req.body;
             yield (0, transaction_services_1.topUp)(top_up_amount, (_b = req.user) === null || _b === void 0 ? void 0 : _b.email);
-            const finalBalance = yield (0, transaction_services_1.getBalance)((_c = req.user) === null || _c === void 0 ? void 0 : _c.email);
+            const recordedTopUp = yield (0, transaction_services_1.recordTopUpTransaction)((_c = req.user) === null || _c === void 0 ? void 0 : _c.email, top_up_amount);
+            // console.log(recordedTopUp);
+            const finalBalance = yield (0, transaction_services_1.getBalance)((_d = req.user) === null || _d === void 0 ? void 0 : _d.email);
             res.status(200).json({
                 status: 200,
                 message: "Top Up Balance berhasil",

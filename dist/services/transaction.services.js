@@ -13,6 +13,7 @@ exports.getBalance = getBalance;
 exports.getTransactionHistory = getTransactionHistory;
 exports.topUp = topUp;
 exports.createTransaction = createTransaction;
+exports.recordTopUpTransaction = recordTopUpTransaction;
 const client_1 = require("@prisma/client");
 const http_error_1 = require("../utils/http.error");
 const prisma = new client_1.PrismaClient();
@@ -29,7 +30,7 @@ function getBalance(email) {
         return data === null || data === void 0 ? void 0 : data.balance;
     });
 }
-function getTransactionHistory(offset, limit, email) {
+function getTransactionHistory(offset, skip, limit, email) {
     return __awaiter(this, void 0, void 0, function* () {
         // this one is tricky
         // because the requirement said, only get user transaction history only
@@ -40,10 +41,10 @@ function getTransactionHistory(offset, limit, email) {
                     email: email,
                 },
             },
-            skip: offset,
+            skip,
             take: limit,
             orderBy: {
-                created_on: "desc", // Optional: latest transactions first
+                created_on: "desc",
             },
             select: {
                 invoice_number: true,
@@ -115,7 +116,7 @@ function createTransaction(service_code, email) {
             data: {
                 invoice_number: `INV${formattedDate}-${transactionCount + 1}`,
                 transaction_type: "PAYMENT",
-                description: `Top Up ${service_code}`,
+                description: `${isService.service_name}`,
                 total_amount: isService.service_tariff, // example amount
                 created_on: new Date(),
                 user: {
@@ -136,9 +137,54 @@ function createTransaction(service_code, email) {
             },
         });
         return {
-            invoice_numer: transaction.invoice_number,
+            invoice_number: transaction.invoice_number,
             service_code,
             service_name: isService.service_name,
+            transaction_type: transaction.transaction_type,
+            total_amount: transaction.total_amount,
+            created_on: transaction.created_on,
+        };
+    });
+}
+function recordTopUpTransaction(email, amount) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const user = yield prisma.user.findUnique({
+            where: {
+                email,
+            },
+        });
+        if (!user) {
+            throw new http_error_1.HttpError(401, "User tidak ditemukan");
+        }
+        const transactionCount = yield prisma.transactionHistory.count({
+            where: {
+                user: {
+                    email,
+                },
+            },
+        });
+        const now = new Date();
+        // Format date to DDMMYYYY
+        const day = String(now.getDate()).padStart(2, "0");
+        const month = String(now.getMonth() + 1).padStart(2, "0");
+        const year = now.getFullYear();
+        const formattedDate = `${day}${month}${year}`;
+        const transaction = yield prisma.transactionHistory.create({
+            data: {
+                invoice_number: `INV${formattedDate}-${transactionCount + 1}`,
+                transaction_type: "TOPUP",
+                description: `Top Up`,
+                total_amount: amount,
+                created_on: new Date(),
+                user: {
+                    connect: {
+                        email: email,
+                    },
+                },
+            },
+        });
+        return {
+            invoice_number: transaction.invoice_number,
             transaction_type: transaction.transaction_type,
             total_amount: transaction.total_amount,
             created_on: transaction.created_on,
