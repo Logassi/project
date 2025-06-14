@@ -15,7 +15,24 @@ const fileFilter = (
   cb(null, true);
 };
 
+const fileFilterDocument = (
+  req: Request,
+  file: Express.Multer.File,
+  cb: FileFilterCallback
+) => {
+  const allowedMimeTypes = ["application/doc", "application/pdf"];
+  if (!allowedMimeTypes.includes(file.mimetype)) {
+    return cb(new Error("Format file harus .docs atau .pdf"));
+  }
+  cb(null, true);
+};
+
 export const upload = multer({
   storage,
   fileFilter,
+});
+
+export const uploadDocument = multer({
+  storage,
+  fileFilter: fileFilterDocument,
 });
